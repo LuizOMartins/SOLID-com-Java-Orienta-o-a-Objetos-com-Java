@@ -1,0 +1,226 @@
+Coesão e o Single Responsibility Principe:
+
+
+Coesão:
+- unica responsabilidade.
+- baixa coesão:  muito codigo.
+
+
+
+_________________________
+Uma classe coesa é aquela que contém apenas uma única responsabilidade. Ou seja, ela toma conta de apenas um conceito dentro do sistema.
+
+Classes coesas tendem a ser menores, e por consequência, mais fáceis de serem lidas e mantidas. Elas também tendem a ser mais reutilizáveis, afinal são mais fáceis.
+
+_________________________
+***********
+
+Classes que não são coesas geralmente possuem muitos comportamentos (métodos). Além disso, elas também tem a tendência de crescer pra sempre, ou seja, o tempo inteiro o desenvolvedor tem que por a mão para escrever mais código.
+_________________________
+Uma classe não coesa contém muitas diferentes responsabilidades. A ideia é então separar essas responsabilidades em classes diferentes. Como no caso do vídeo, onde separamos cada regra de cálculo em um lugar separado. Repare também que a classe Funcionario também é coesa, já que ela cuida apenas das responsabilidades e comportamentos de um funcionário.
+
+Então, encontrou uma classe com muita responsabilidade, divida-a em várias classes menores.
+
+_________________________
+
+É um dos princípios SOLID, que o nome já diz, a ideia é ter uma única responsabilidade por classe. Ou seja, coesão.
+
+_________________________
+
+
+
+
+
+
+Java Enums
+Um enum é uma "classe" especial que representa um grupo de constantes (variáveis ​​imutáveis, como finalvariáveis).
+
+
+
+Exemplo:
+public enum TipoDeDocumento {
+
+    RG("RG - Registro Geral"),
+    CPF("CPF - Cadastro de Pessoas Físicas"),
+    CNPJ("CNPJ - Cadastro Nacional da Pessoa Jurídica");
+
+    private String descricao;
+
+    /**
+     * Construtor privado para montar a enum
+     */
+    private TipoDeDocumento(String descricao) {
+        this.descricao = descricao;
+    }
+
+    public String getDescricao() {
+        return descricao;
+    }
+}
+
+_________________________
+
+
+
+
+
+Caso simulado:
+
+1° Classe (CalculadoraDeSalario), dado o funcionario ela calcula seu bonus e o salario ( Um metodo para cada funcionario).
+OBS( Essa é uma classe que parece bastante com código do mundo real. Certo? Onde eu tenho classes que olham o estado de um objeto e, a partir daí, decidem qual algoritmo executar, e fazem isso por meio de ifs e fors e whiles etc. e tal. );
+____________________________________
+
+public class CalculadoraDeSalario {
+
+
+    public double calcula(Funcionario funcionario) {
+        if(DESENVOLVEDOR.equals(funcionario.getCargo())) {
+            return dezOuVintePorcento(funcionario);
+        }
+
+        if(DBA.equals(funcionario.getCargo()) || TESTER.equals(funcionario.getCargo())) {
+            return quinzeOuVinteCincoPorcento(funcionario);
+        }
+
+        throw new RuntimeException("funcionario invalido");
+    }
+
+    private double dezOuVintePorcento(Funcionario funcionario) {
+        if(funcionario.getSalarioBase() > 3000.0) {
+            return funcionario.getSalarioBase() * 0.8;
+        }
+        else {
+            return funcionario.getSalarioBase() * 0.9;
+        }
+    }
+
+    private double quinzeOuVinteCincoPorcento(Funcionario funcionario) {
+        if(funcionario.getSalarioBase() > 2000.0) {
+            return funcionario.getSalarioBase() * 0.75;
+        }
+        else {
+            return funcionario.getSalarioBase() * 0.85;
+        }
+    }
+
+}
+____________________________________
+
+2° Estraindo metodo para classes.
+Eu vou ter uma classe cuja única responsabilidade é entender da regra de DezOuVintePorCento, a outra, de QuinzeOuVinteCincoPorCento.
+**refatoração:
+
+private double dezOuVintePorcento(Funcionario funcionario) {
+        if(funcionario.getSalarioBase() > 3000.0) {
+            return funcionario.getSalarioBase() * 0.8;
+        }
+        else {
+            return funcionario.getSalarioBase() * 0.9;
+        }
+    }
+
+
+
+
+3°Criado Interface calcula:
+
+RegraDeCalculo, método public double calcula que vai receber um funcionário aqui, que eu vou colocar funcionario:
+
+Interface: RegraDeCalculo
+public double calcula(Funcionario funcionario);
+
+
+**
+Implementar, implements RegraDeCalculo. Vou mudar o método aqui para calcula, o método fica public, certo? Legal.
+
+public class DezOuVintePorCento implements RegraDeCalculo {
+
+    public double calcula(Funcionario funcionário) {
+            if(funcionario.getSalarioBase() > 3000.0) {
+                return funcionario.getSalarioBase() * 0.8;
+        }
+        else {
+            return funcionario.getSalarioBase() * 0.9;
+        }
+ }
+}
+
+** Veja só que essa classe – as duas, na verdade – não sofrem o problema da classe antiga da CalculadoraDeSalario, porque essa classe não vai crescer pra sempre. A única responsabilidade dela é cuidar dessa regra de DezOuVintePorCento, e dessa outra, de QuinzeOuVinteECincoPorCento, e assim por diante.
+
+
+**
+ Agora vou voltar aqui para a CalculadoraDeSalario e vamos fazer a refatoração mais simples, que é dar um new aqui na regra. DezOuVintePorCento(). calcula e passo o funcionario. A mesma coisa aqui no debaixo, return new QuinzeOuVinteECincoPorCento().calcula(funcionario);:
+
+public class CalculadoraDeSalario {
+
+
+    public double calcula(Funcionario funcionario) {
+        if(DESENVOLVEDOR.equals(funcionario.getCargo())) {
+            return new DezOuVintePorCento(). calcula(funcionario);
+        }
+
+        if(DBA.equals(funcionario.getCargo()) || TESTER.equals(funcionario.getCargo())) {
+            return new QuinzeOuVinteECincoPorCento().calcula(funcionario);
+        }
+
+        throw new RuntimeException("funcionario invalido");
+    }
+
+##Classes  com a regra de calculo continuam coesas, porem a CalculadoraDeSalario continua crescendo.
+
+Esse nosso código já está bem melhor. 
+Todas as classes são mais ou menos coesas, mais ou menos por que essas duas estão bem coesas, 
+mas a CalculadoraDeSalario está meio estranha ainda. 
+Essa aqui ainda não para de crescer, certo, sempre que um cargo novo aparecer,
+ eu vou ter que lembrar de colocar um if a mais aqui.
+
+Vamos resolver isso aqui. Como que eu vou fazer? Fácil. Todo cargo tem uma regra de negócio associada, certo? Então é isso que eu vou fazer aqui. Quando eu criar um cargo, eu vou passar pra ele o tipo de regra de negócio que ele vai usar. DESENVOLVEDOR(new DezOuVintePorCento()),, o DBA(new QuinzeOuVinteECincoPorCento()),, e a mesma coisa para o meu TESTER(new QuinzeOuVinteECincoPorCento());:
+
+public enum Cargo {
+    DESENVOLVEDOR(new DezOuVintePorCento()),
+    DBA(new DezOuVintePorCento()),
+    TESTER(new QuinzeOuVinteECincoPorCento());
+}
+
+Está certo? As pessoas esquecem – esse é um detalhe do Java – que o enum é quase uma classe, eu posso ter código nele.
+
+O que eu vou fazer aqui, vou criar o construtor do Cargo, que vai receber uma RegraDeCalculo, que vou chamar de regra, vou guardar essa regra num atributo do enum, e vou criar aqui o getRegra:
+
+private RegraDeCalculo regra;
+
+Cargo(RegraDeCalculo regra)  {
+    this.regra = regra;
+}
+public RegraDeCalculo getRegra()  {
+    return 
+}
+
+uncionario.getCargo().getRegra().calcula(funcionario);:
+
+public double calcula(Funcionario funcionario)  {
+    return funcionario.getCargo().getRegra().calcula(funcionario);`
+Eu poderia até, na verdade, esconder isso aqui dentro do próprio funcionario, alguma coisa como:
+
+public double  calcula(Funcionario funcionario)  {
+     return funcionario.calculaSalario();
+}
+E esse método lá dentro vai fazer simplesmente:
+
+public double calculaSalario()  {
+    return  cargo.getRegra().calcula(this);
+} 
+Calcula para ele mesmo (this). Tudo isso aqui continua funcionando. Apaguei os imports ali em cima e o código ficou menor.
+
+Nessa minha implementação, talvez essa classe CalculadoraDeSalario passe até a ser inútil, porque agora ela só tem uma única linha de código, calculaSalario(). O meu grande segredo aqui foi as classes DezOuVintePorCento, QuinzeOuVinteECincoPorCento.
+
+orque uma classe coesa é mais fácil de ser lida, eu tenho mais reuso, eu posso pegá-la e levar para um outro sistema, ela provavelmente vai ser mais simples, porque ela vai ter menos código, e eu não vou precisar abri-la o tempo inteiro. 
+
+4°** Acabou que existe a classe Calcula que delega a responsabilidade para as Classes, mas tem vários IFs em Calcula para verificar o tipo funcionario e chamar o metodo.
+
+5° Craido um Enum para Cargos dos funcionarios que recebe no s Construtor o tipo de regra de calculo e salva no atributo do ENum.
+
+
+FAZER LEITURA SOLID - SRP
+
+
+
