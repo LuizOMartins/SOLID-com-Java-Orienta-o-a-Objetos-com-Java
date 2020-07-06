@@ -1,0 +1,28 @@
+Classes Estaveis: Tente a mudar muito pouco.
+
+
+OCP: Open Closed Principe 
+- Classes abertas para extesão
+- Classe fechada para modificação
+
+* No exemplo a calsse ficou aberta para extensão utilizando do polimorfismo utilizando a interface, inserindo a dependencia no contrutor. COm isso sua modificação em sí não é alterada, mas seu comportamento é modificado e tendo assim extesão.
+
+
+DIP: Principio de inversão de dependencias.
+- sempre dependender de alguém mais estavel.
+
+*pensar primeiro na abstração e depois na implementação, em OO.
+
+*O OCP diz para escrevermos classes que sejam facilmente extensíveis (ou seja, abertas pra extensão). Dessa forma, mudar o comportamento da classe atual é fácil: basta passar outras implementações concretas das abstrações que ela depende.
+
+Classes abertas para extensão, mas fechadas para modificação, também são mais coesas.
+
+
+*O DIP nos diz para sempre dependermos de módulos que sejam mais estáveis que o módulo corrente. Abstrações devem depender de abstrações, e implementação deve depender de abstração.
+
+Com isso, diminuímos o risco do acoplamento, afinal abstrações são estáveis, e tendem a não mudar frequentemente, diminuindo a propagação de problemas.
+
+
+**Ao pensar em classes abertas, o programador precisa pensar em abstrações. Afinal, é por meio delas que ele vai conseguir estender o comportamento.
+
+Ao pensar em abstrações, idealmente o programador também pensa na estabilidade de cada uma dessas abstrações. Afinal, ele precisa gerenciar o problema do acoplamento.

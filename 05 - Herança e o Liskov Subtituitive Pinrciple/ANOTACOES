@@ -1,0 +1,14 @@
+LSP: Principio de subtituição de Liskov.
+
+Em herança:
+Toda classe filha tem que pensam nas pre e pos condições da classe pai.
+
+Pre-condição:
+-nunca apertar uma pre-condição.
+
+Pós-Condição:
+- nunca posso afrouxar uma pós condição.
+
+
+**Favoreça a composição.
+
